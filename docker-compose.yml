@@ -20,8 +20,13 @@ services:
     environment:
       BOT_TOKEN: 8093240750:AAG5eoFP6fxjdxtjYwH0p5FTsD1Sw0IOmY4
       API_URL: http://orders-api:8000/orders/
+      POSTGRES_DB: orders
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      DB_HOST: db
     networks:
       - app_net
+
 
   db:
     image: postgres:15
