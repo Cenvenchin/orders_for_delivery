@@ -1,0 +1,56 @@
+services:
+
+  orders-api:
+    build: ./orders_api
+    container_name: orders-api
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./orders_api/data:/app/data
+    restart: unless-stopped
+    networks:
+      - app_net
+
+  telegram-bot:
+    build: ./telegram_bot
+    container_name: telegram-bot
+    depends_on:
+      - orders-api
+    restart: unless-stopped
+    environment:
+      BOT_TOKEN: 8093240750:AAG5eoFP6fxjdxtjYwH0p5FTsD1Sw0IOmY4
+      API_URL: http://orders-api:8000/orders/
+    networks:
+      - app_net
+
+  db:
+    image: postgres:15
+    container_name: db
+    environment:
+      POSTGRES_DB: orders
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+    networks:
+      - app_net
+
+  adminer:
+    image: adminer
+    container_name: adminer
+    ports:
+      - "8080:8080"
+    networks:
+      - app_net
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    ports:
+      - "80:80"
+    depends_on:
+      - orders-api
+    networks:
+      - app_net
+
+networks:
+  app_net:
+    driver: bridge
